@@ -5,13 +5,12 @@
 set -e
 
 # Variables
-TEMPLATE="debian-12-standard_12.0-1_amd64.tar.zst"
-STORAGE="local"
 CTID=105
 HOSTNAME="homarr"
 MEMORY=1024
 DISK=8
 CPU=2
+STORAGE="local"
 
 # Prompt for Network Bridge
 read -p "Enter Proxmox network bridge (e.g., vmbr0, vmbr1): " BRIDGE
@@ -20,11 +19,21 @@ if [ -z "$BRIDGE" ]; then
   exit 1
 fi
 
-# Check if template exists
+# Get latest Debian template
+echo "Fetching latest Debian template..."
+pveam update
+TEMPLATE=$(pveam available | grep debian-12-standard | sort -r | head -n 1 | awk '{print $2}')
+
+if [ -z "$TEMPLATE" ]; then
+  echo "No Debian template found. Exiting."
+  exit 1
+fi
+
+# Download template if not already present
 if [ ! -f "/var/lib/vz/template/cache/$TEMPLATE" ]; then
-  echo "Downloading Debian template..."
-  wget -O "/var/lib/vz/template/cache/$TEMPLATE" "https://images.linuxcontainers.org/images/debian/bookworm/amd64/default/20240228_05:24/rootfs.tar.xz"
-  echo "Download complete."
+  echo "Downloading $TEMPLATE..."
+  pveam download $STORAGE $TEMPLATE
+  echo "Template download complete."
 fi
 
 # Create the container
