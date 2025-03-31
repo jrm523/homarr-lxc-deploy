@@ -10,7 +10,8 @@ HOSTNAME="homarr"
 MEMORY=1024
 DISK=8
 CPU=2
-STORAGE="local-lvm"
+TEMPLATE_STORAGE="local"  # For container templates
+ROOTFS_STORAGE="local-lvm" # For container disk storage
 
 # Prompt for Network Bridge
 read -p "Enter Proxmox network bridge (e.g., vmbr0, vmbr1): " BRIDGE
@@ -32,18 +33,18 @@ fi
 # Download template if not already present
 if [ ! -f "/var/lib/vz/template/cache/$TEMPLATE" ]; then
   echo "Downloading $TEMPLATE..."
-  pveam download $STORAGE $TEMPLATE
+  pveam download $TEMPLATE_STORAGE $TEMPLATE
   echo "Template download complete."
 fi
 
 # Create the container
 pct create $CTID \
-  $STORAGE:vztmpl/$TEMPLATE \
+  $TEMPLATE_STORAGE:vztmpl/$TEMPLATE \
   -hostname $HOSTNAME \
   -memory $MEMORY \
   -cores $CPU \
   -net0 name=eth0,bridge=$BRIDGE,firewall=1 \
-  -rootfs $STORAGE:$DISK \
+  -rootfs $ROOTFS_STORAGE:$DISK \
   -password homarr \
   -unprivileged 1
 
