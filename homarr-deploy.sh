@@ -12,6 +12,7 @@ DISK=8
 CPU=2
 TEMPLATE_STORAGE="local"  # For container templates
 ROOTFS_STORAGE="local-lvm" # For container disk storage
+NAMESERVER="192.168.31.1" # Default DNS server
 
 # Prompt for Network Bridge
 read -p "Enter Proxmox network bridge (e.g., vmbr0, vmbr1): " BRIDGE
@@ -47,6 +48,8 @@ pct create $CTID \
   -rootfs $ROOTFS_STORAGE:$DISK \
   -password homarr \
   -unprivileged 1
+  -nameserver $NAMESERVER
+
 
 # Start the container
 pct start $CTID
