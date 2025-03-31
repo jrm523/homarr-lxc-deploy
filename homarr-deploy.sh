@@ -10,7 +10,7 @@ HOSTNAME="homarr"
 MEMORY=1024
 DISK=8
 CPU=2
-STORAGE="local"
+STORAGE="local-lvm"
 
 # Prompt for Network Bridge
 read -p "Enter Proxmox network bridge (e.g., vmbr0, vmbr1): " BRIDGE
