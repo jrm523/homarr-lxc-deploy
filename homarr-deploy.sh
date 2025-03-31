@@ -48,11 +48,12 @@ pct create $CTID \
   -rootfs $ROOTFS_STORAGE:$DISK \
   -password homarr \
   -unprivileged 1
-  -nameserver $NAMESERVER
-
 
 # Start the container
 pct start $CTID
+
+# Inject DNS configuration
+pct exec $CTID -- bash -c "echo 'nameserver $NAMESERVER' > /etc/resolv.conf"
 
 # Install Homarr inside the container
 echo "Waiting for container to boot..."
